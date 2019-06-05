@@ -291,17 +291,21 @@ function decrypt_command
 {
     local output_file="${1}"; shift
     local command_openssl="openssl rsautl -decrypt -inkey ~/.ssh/id_rsa"
-    local command instructions
+    local command_ssh command_yubikey instructions
 
     if [ "${output_file}" == "" ]
     then
-        command="{ base64 -D | ${command_openssl} ; } <<< \${encrypted_text}"
+        command_ssh="{ openssl base64 -d | ${command_openssl} ; } <<< \${encrypted_text}"
+        command_yubikey="pkcs11-tool -m RSA-PKCS --decrypt -i <(openssl base64 -d <<< \${encrypted_text})"
     else
-        command="base64 -D -i $(basename ${output_file}) | ${command_openssl}"
+        command_ssh="openssl base64 -d -in $(basename "${output_file}") | ${command_openssl}"
+        command_yubikey="pkcs11-tool -m RSA-PKCS --decrypt -i <(openssl base64 -d -in $(basename "${output_file}"))"
     fi
-    instructions="Decrypt with: ${command}"
 
-    echo "${instructions}"
+    cat <<EOF
+Decrypt with SSH key: \`${command_ssh}\`
+Decrypt with Yubikey: \`${command_yubikey}\`
+EOF
 }
 
 function copy_clipboard
