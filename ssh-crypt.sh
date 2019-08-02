@@ -79,7 +79,8 @@ function readme() {
         foobar
 
         pBURlPWmROiesciSkV3pDfLEhMZgF2oWSbCGnj/VciRMwJME5e7nIuXnMTcEsQ+VWuttQIYVbgp7p1C6KxhWgvVm8VgaiXqcUQhkKkZNFamRZcZdW928GHfQ++vO9eoOy9u3ZFfULm8HHK9LePAtEi1knhYHy2MHcw/QOTnYXtTgPEY1QjpXIwpBb/zQBz7XSW/2HVBHcklQQ83qcfoGYK0UNM5rMs2G8xXsK/K37h0QfPTOzvgJ1fvGXrV75y6iZDXUJZgsALPRmeG3mYLSjs/au9ppWNu5oG2sXoOHtMtxXK98r/G4yrkQGr6fKTRLAGjepWTfkaqqn1VDCTb3iiiGBoNik4rGD0uoX8JgI+rlTIdoPW9Xa73rQCV9EV0LH6ufiUenCMOBYqyVDcHa/uetbbUMRRGkBb5gU2Ogeec2ALVDcKcayLgcxYifE0BYs1jOSdLOVSxwNE9usDgrhTgoEtX7t6k/CMxILWXs0sOVG4QmwOBdSmSaEqz2LhasATOqgF7UkFh9lNf7Dbks8bkYYe2i+tEWlLCSYA93nNwP09cBLW/jAf+lCJD7EFR6Man7w7KO3ZnE30KWgTMZF+DgwwJ+OmgebHSXQS6X6be5Z9iHdVp1ZZ3Ola+mGyIqJghF0QhE1/wvh27+zGGcqjOHj1iXetIGKaju8/S5Oig=
-        Decrypt with: { base64 -D | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa ; } <<< \${encrypted_text}
+        Decrypt with SSH key: \`{ openssl base64 -d | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa ; } <<< \${encrypted_text}\`
+        Decrypt with Yubikey: \`pkcs11-tool -m RSA-PKCS --decrypt -i <(openssl base64 -d <<< \${encrypted_text})\`
         \`\`\`
 
         Using command line arguments:
@@ -87,14 +88,16 @@ function readme() {
         \`\`\`bash
         \$ ${NAME_SELF} -n example@domain.tld -p ~/.ssh-crypt/example@domain.tld.pem -i plaintext.txt -o secret.enc
         Encrypted text saved to: secret.enc
-        Decrypt with: base64 -D -i secret.enc | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
+        Decrypt with SSH key: \`openssl base64 -d -in secret.enc | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa\`
+        Decrypt with Yubikey: \`pkcs11-tool -m RSA-PKCS --decrypt -i <(openssl base64 -d -in secret.enc)\`
         \`\`\`
 
         Using stdin and stdout:
 
         \`\`\`bash
         \$ ${NAME_SELF} -n example@domain.tld -p ~/.ssh-crypt/example@domain.tld.pem <<< "foobar" > secret.enc
-        Decrypt with: { base64 -D | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa ; } <<< \${encrypted_text}
+        Decrypt with SSH key: \`{ openssl base64 -d | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa ; } <<< \${encrypted_text}\`
+        Decrypt with Yubikey: \`pkcs11-tool -m RSA-PKCS --decrypt -i <(openssl base64 -d <<< \${encrypted_text})\`
         \$ cat secret.enc
         BdRa+z5JfxWvIXdrOugAE1U+VU4YYJEPpM3OgylNgmwhM7HjZPQpFPYmk5GPVE+/Nc5mJM0O5yX88JdvDAkYas72FFuDC/JLDQHZIN/ymaJ50UEzTwKYnffT0maxH4pE963i1P1BHnShyl6ZcOqEmQrWNmHtTr/IkOsB3CCMPqtfTPI1cRiKbtPUsny/5jD3Outx/CuVvYo1mG5KyyHjRlp63W6lWsYCR97YMpKOiVm8DlmZLwjzP/Uf4kfsaKo5fs1Q51vOowUJAu8El09vnLCusgcIwI0401oa1TdpA3ARTAWJ2Nw2Imi39Ks4zcGzoXqLQesjGLCEqUp7CeZCn+0QgOUFeCmemtqEn137XMAvyZrUBI2KWZUBfWkH9GbVzGy05J2MD8x/l4S3Oq3TCph3VWiA88RYzsUMXCr4XxkSqGXfVtDOYLmLYXbXSsYu/eCXDjnEgwPXo4rp/Iriw9w/afKMCf68S+7aF/2E+WsICCuhBDgqCtUW9BWVV0/7qyJbIXHU+mRLZ6Aye2YmfvDT2FmNyhJRkcobxnAT1C1tm4qKcC2pdDH3CBQg+qH3PMmNjAEjf+NQXnpNCGtCdUfQaxMq+3i/Es9Bs0yl2wk1r1sVKmx1BcSLVtGk5FFWRLj1/eRjkLzsEnK7CFsuDeOCD4vxnm6Q/ZylxgDY3e8=
         \`\`\`
